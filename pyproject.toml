@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "fitness-research-agent"
+version = "0.1.0"
+description = "Fitness Research Agent using AI"
+authors = ["Michele Makiki <michele.makiki@gmail.com>"]
+packages = [
+    { include = "fitness_research_agent" }  # This must match your directory name (with underscores)
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+openai = "*"
+rich = "*"
+openai-agents = "*"
+python-dotenv = "*"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
