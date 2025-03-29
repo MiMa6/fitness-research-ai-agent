@@ -33,8 +33,8 @@ This project uses a multi-agent system to research, analyze, and generate person
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/fitness-research-agent.git
-cd fitness-research-agent
+git clone https://github.com/MiMa6/fitness-research-ai-agent.git
+cd fitness-research-ai-agent.
 ```
 
 2. Install dependencies using Poetry:
