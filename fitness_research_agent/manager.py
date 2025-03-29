@@ -25,7 +25,15 @@ from fitness_research_agent.agents.planner_agent import (
     FitnessSearchItem,
     planner_agent,
 )
+from fitness_research_agent.agents.writer_agent import (
+    FitnessReportData,
+    writer_agent,
+)
 from fitness_research_agent.agents.search_agent import search_agent
+from fitness_research_agent.agents.verifier_agent import (
+    VerificationResult,
+    verifier_agent,
+)
 
 
 class FitnessResearchManager:
@@ -56,8 +64,23 @@ class FitnessResearchManager:
             )
             search_plan = await self._plan_searches(query)
             search_results = await self._perform_searches(search_plan)
+            report = await self._write_report(query, search_results)
+            verification = await self._verify_report(report)
 
-            print("End")
+            final_report = f"Report summary\n\n{report.short_summary}"
+            self.printer.update_item("final_report", final_report, is_done=True)
+
+            self.printer.end()
+
+        # Print to stdout
+        print("\n\n=====REPORT=====\n\n")
+        print(f"Report:\n{report.markdown_report}")
+        print("\n\n=====FOLLOW UP QUESTIONS=====\n\n")
+        print("\n".join(report.follow_up_questions))
+        print("\n\n=====VERIFICATION=====\n\n")
+        print(verification)
+
+        print("End")
 
     async def _plan_searches(self, query: str) -> FitnessSearchPlan:
         self.printer.update_item("planning", "Planning searches...")
@@ -95,3 +118,34 @@ class FitnessResearchManager:
             return str(result.final_output)
         except Exception:
             return None
+
+    async def _write_report(
+        self, query: str, search_results: Sequence[str]
+    ) -> FitnessReportData:
+
+        writer_with_tools = writer_agent.clone(tools=[])
+        self.printer.update_item("writing", "Thinking about report...")
+        input_data = (
+            f"Original query: {query}\nSummarized search results: {search_results}"
+        )
+        result = Runner.run_streamed(writer_with_tools, input_data)
+        update_messages = [
+            "Planning report structure...",
+            "Writing sections...",
+            "Fitness plan report...",
+        ]
+        last_update = time.time()
+        next_message = 0
+        async for _ in result.stream_events():
+            if time.time() - last_update > 5 and next_message < len(update_messages):
+                self.printer.update_item("writing", update_messages[next_message])
+                next_message += 1
+                last_update = time.time()
+        self.printer.mark_item_done("writing")
+        return result.final_output_as(FitnessReportData)
+
+    async def _verify_report(self, report: FitnessReportData) -> VerificationResult:
+        self.printer.update_item("verifying", "Verifying report...")
+        result = await Runner.run(verifier_agent, report.markdown_report)
+        self.printer.mark_item_done("verifying")
+        return result.final_output_as(VerificationResult)
