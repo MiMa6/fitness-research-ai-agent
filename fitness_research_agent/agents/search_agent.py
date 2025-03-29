@@ -2,7 +2,7 @@ from agents import Agent, WebSearchTool
 from agents.model_settings import ModelSettings  # type: ignore
 
 # Given a search term, use web search to pull back a brief summary.
-# Summaries should be concise but capture the main financial points.
+# Summaries should be concise but capture the main points.
 PROMPT = (
     "You are a research assistant specializing in exercise science, sports nutrition, and fitness. "
     "Given a search term, use web search to retrieve up-to-date, evidence-based information and "

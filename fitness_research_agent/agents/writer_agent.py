@@ -2,8 +2,7 @@ from pydantic import BaseModel
 
 from agents import Agent
 
-# Writer agent brings together the raw search results and optionally calls out
-# to sub‑analyst tools for specialized commentary, then returns a cohesive markdown report.
+# Writer agent brings together the raw search results
 
 WRITER_PROMPT = (
     "You are a senior fitness research analyst and certified strength & conditioning specialist. "
@@ -51,8 +50,6 @@ class FitnessReportData(BaseModel):
     """Strategic questions for plan refinement and optimization."""
 
 
-# Note: We will attach handoffs to specialist analyst agents at runtime in the manager.
-# This shows how an agent can use handoffs to delegate to specialized subagents.
 writer_agent = Agent(
     name="FitnessWriterAgent",
     instructions=WRITER_PROMPT,
